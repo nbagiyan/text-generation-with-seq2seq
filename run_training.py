@@ -1,7 +1,7 @@
 import argparse
 import pandas as pd
 import time
-from data_loader import DataLoader
+from torch.utils.data import DataLoader
 from lang import *
 from dataset import *
 from encoder import *
