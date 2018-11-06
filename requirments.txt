@@ -1,5 +1,4 @@
 tqdm==4.19.5
-torch==0.4.1
 torchtext==0.2.3
 torchvision==0.2.0
 scikit-learn==0.19.1
