@@ -17,7 +17,7 @@ class ClickBaitDataset(Dataset):
         source = [self.lang.word2index[token] for token in x.split(' ')]
         source = self.__pad_item(source)
         source.append(self.EOS_token)
-        return source
+        return source, len(source)
 
     def __pad_item(self, x):
         if len(x) >= self.MAX_LENGTH:
