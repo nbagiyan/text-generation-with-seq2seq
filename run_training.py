@@ -11,7 +11,6 @@ from torch import optim
 from train import *
 
 USE_CUDA = 1
-USE_PRETRAINED = False
 PAD_token = 0
 SOS_token = 1
 EOS_token = 2
@@ -30,13 +29,14 @@ if __name__ == '__main__':
     parser.add_argument('--save_path_decoder')
     parser.add_argument('--save_path_optimizer_encoder')
     parser.add_argument('--save_path_optimizer_decoder')
+    parser.add_argument('--use_pretrained')
     args = vars(parser.parse_args())
 
-    attn_model = 'dot'
     hidden_size = 300
     n_layers = int(args['n_layers'])
     dropout = 0.1
     batch_size = int(args['batch_size'])
+    USE_PRETRAINED = int(args['use_pretrained'])
 
     # Configure training/optimization
     clip = 50.0
@@ -55,6 +55,7 @@ if __name__ == '__main__':
                                PAD_token, MAX_LENGTH)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=16, drop_last=True)
     logger.info('Finished')
+
     if USE_PRETRAINED:
         encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout, lang1.embedding_matrix)
         decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, lang1.embedding_matrix)
@@ -67,6 +68,7 @@ if __name__ == '__main__':
     decoder_optimizer = optim.Adam(decoder.parameters(), lr=learning_rate * decoder_learning_ratio)
 
     try:
+        logger.info('Trying to load model')
         encoder_state = torch.load(args['save_path_optimizer_encoder'], map_location="cpu")
         encoder.load_state_dict(encoder_state)
 
@@ -79,10 +81,10 @@ if __name__ == '__main__':
         decoder_optimizer_state = torch.load(args['save_path_optimizer_decoder'], map_location="cpu")
         encoder_optimizer.load_state_dict(decoder_optimizer_state)
         from_scratch = False
-        print('Continue training')
+        logger.info('Continue training')
     except Exception as e:
-        print(e)
-        print('From scratch')
+        logger.exception(e)
+        logger.info('From scratch')
         pass
 
     if USE_CUDA:
@@ -118,14 +120,14 @@ if __name__ == '__main__':
                 print_loss_avg = print_loss_total / print_every
                 print_loss_total = 0
                 print_summary = 'Epoch:%d - Batch:%d - loss:%.4f' % (epoch, batch_n, print_loss_avg)
-                print(print_summary)
+                logger.info(print_summary)
 
             if batch_n % save_every == 0:
                 torch.save(encoder.state_dict(), args['save_path_encoder'])
                 torch.save(decoder.state_dict(), args['save_path_decoder'])
                 torch.save(encoder_optimizer.state_dict(), args['save_path_optimizer_encoder'])
                 torch.save(decoder_optimizer.state_dict(), args['save_path_optimizer_decoder'])
-                print('Model saved on batch %d' % batch_n)
+                logger.info('Model saved on batch %d' % batch_n)
 
             torch.cuda.empty_cache()
 
