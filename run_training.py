@@ -44,8 +44,8 @@ if __name__ == '__main__':
     df_all = pd.read_csv(args['input_data'])
     df_all.dropna(inplace = True)
     lang1 = Lang()
-    lang1.addSentences(df_all.iloc[:2000000]['headline'].values.tolist())
-    dataset = ClickBaitDataset(df_all.iloc[:2000000], lang1, EOS_token,
+    lang1.addSentences(df_all.iloc[:1000000]['headline'].values.tolist())
+    dataset = ClickBaitDataset(df_all.iloc[:1000000], lang1, EOS_token,
                                PAD_token, MAX_LENGTH)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=16, drop_last=True)
 
