@@ -11,13 +11,14 @@ class Lang(object):
         self.index2word = {0: "PAD", 1: "SOS", 2: "EOS"}
         self.n_words = 2  # Count SOS and EOS
 
-    def addSentences(self, sentences_lst):
+    def addSentences(self, sentences_lst, create_embeddings = False):
         logger.info('started adding words')
         for sentence in tqdm.tqdm(sentences_lst):
             for word in sentence.split(' '):
                 self.addWord(word)
         logger.info('Finished')
-        self.create_embedding_matrix(torchtext.vocab.FastText(), 300)
+        if create_embeddings:
+            self.create_embedding_matrix(torchtext.vocab.FastText(), 300)
 
     def addWord(self, word):
 
