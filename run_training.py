@@ -1,6 +1,7 @@
 import argparse
 import pandas as pd
 import time
+from logger import logger
 from torch.utils.data import DataLoader
 from lang import *
 from dataset import *
@@ -17,6 +18,8 @@ EOS_token = 2
 MAX_LENGTH = 15
 
 if __name__ == '__main__':
+
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--input_data')
     parser.add_argument('--batch_size')
@@ -41,13 +44,16 @@ if __name__ == '__main__':
     decoder_learning_ratio = 5.0
     n_epochs = 100
 
+    logger.info('Reading data')
     df_all = pd.read_csv(args['input_data'])
     df_all.dropna(inplace = True)
     lang1 = Lang()
+    logger.info('Creating embeddings')
     lang1.addSentences(df_all.sample(frac = float(args['sample_ratio']), random_state=123)['headline'].values.tolist())
     dataset = ClickBaitDataset(df_all.sample(frac = float(args['sample_ratio']), random_state=123), lang1, EOS_token,
                                PAD_token, MAX_LENGTH)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=16, drop_last=True)
+    logger.info('Finished')
 
     encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout, lang1.embedding_matrix)
     decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, lang1.embedding_matrix)
