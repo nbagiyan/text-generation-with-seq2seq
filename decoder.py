@@ -7,6 +7,7 @@ class DecoderRNN(nn.Module):
     def __init__(self, hidden_size, output_size, dropout, embedding_weights = None):
         super(DecoderRNN, self).__init__()
         self.hidden_size = hidden_size
+        self.output_size = output_size
         if embedding_weights is None:
             self.embedding = nn.Embedding(output_size, hidden_size)
         else:
