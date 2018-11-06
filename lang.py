@@ -27,6 +27,7 @@ class Lang(object):
 
     def create_embedding_matrix(self, pretrained_model, embedding_size):
         self.embedding_matrix = torch.zeros(self.n_words, embedding_size)
+        print('started creating embeddings matrix')
         for key, value in tqdm.tqdm(self.word2index.items()):
             if key == 'EOS':
                 self.embedding_matrix[value] = pretrained_model['</s>']
