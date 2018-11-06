@@ -11,11 +11,12 @@ from torch import optim
 from train import *
 
 USE_CUDA = 1
-
+USE_PRETRAINED = False
 PAD_token = 0
 SOS_token = 1
 EOS_token = 2
 MAX_LENGTH = 15
+
 
 if __name__ == '__main__':
 
@@ -54,9 +55,12 @@ if __name__ == '__main__':
                                PAD_token, MAX_LENGTH)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=16, drop_last=True)
     logger.info('Finished')
-
-    encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout, lang1.embedding_matrix)
-    decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, lang1.embedding_matrix)
+    if USE_PRETRAINED:
+        encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout, lang1.embedding_matrix)
+        decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, lang1.embedding_matrix)
+    else:
+        encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout)
+        decoder = DecoderRNN(hidden_size, lang1.n_words, dropout)
 
     # Initialize optimizers and criterion
     encoder_optimizer = optim.Adam(encoder.parameters(), lr=learning_rate)
