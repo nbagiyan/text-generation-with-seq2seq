@@ -101,7 +101,7 @@ if __name__ == '__main__':
         for batch in tqdm.tqdm(dataloader):
             # Get training data for this cycle
             print(batch, batch[0], batch[1])
-            input_batches, input_lengths = torch.LongTensor(batch[0]), batch[1]
+            input_batches, input_lengths = batch[0], batch[1].numpy().tolist()
             input_batches = input_batches.transpose(0, 1)
             # Run the train function
             loss = train(
