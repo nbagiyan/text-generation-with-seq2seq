@@ -1,5 +1,5 @@
 from masked_cross_entropy import *
-
+from logger import logger
 PAD_token = 0
 SOS_token = 1
 EOS_token = 2
@@ -31,7 +31,9 @@ def train(input_batches, input_lengths, target_batches, target_lengths, encoder,
 
     # Run through decoder one time step at a time
     for t in range(max_target_length):
-        decoder_output, decoder_hidden, decoder_attn = decoder(
+        logger.info(decoder_input.size())
+        logger.info(decoder_hidden.size())
+        decoder_output, decoder_hidden = decoder(
             decoder_input, decoder_hidden
         )
 
