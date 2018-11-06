@@ -102,7 +102,7 @@ if __name__ == '__main__':
             # Get training data for this cycle
             input_batches, input_lengths = torch.cat(batch[0]), batch[1].numpy().tolist()
             print(input_batches.size())
-            input_batches = input_batches.transpose(-1, 0)
+            # input_batches = input_batches.transpose(-1, 0)
             # Run the train function
             loss = train(
                 input_batches, input_lengths, input_batches, input_lengths,
