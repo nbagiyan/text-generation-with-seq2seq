@@ -100,7 +100,7 @@ if __name__ == '__main__':
         epoch += 1
         for batch in tqdm.tqdm(dataloader):
             # Get training data for this cycle
-            input_batches, input_lengths = torch.cat(batch[0]), batch[1].numpy().tolist()
+            input_batches, input_lengths = torch.stack(batch[0]), batch[1].numpy().tolist()
             logger.info(input_batches.size())
             # input_batches = input_batches.transpose(-1, 0)
             # Run the train function
