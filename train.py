@@ -31,8 +31,6 @@ def train(input_batches, input_lengths, target_batches, target_lengths, encoder,
 
     # Run through decoder one time step at a time
     for t in range(max_target_length):
-        logger.info(decoder_input.size())
-        logger.info(decoder_hidden.size())
         decoder_output, decoder_hidden = decoder(
             decoder_input, decoder_hidden
         )
