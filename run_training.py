@@ -69,7 +69,7 @@ if __name__ == '__main__':
         decoder = DecoderRNN(hidden_size, lang1.n_words, dropout)
 
     # Initialize optimizers and criterion
-    encoder_optimizer = optim.Adam(encoder.parameters(), lr=learning_rate)
+    encoder_optimizer = optim.S(encoder.parameters(), lr=learning_rate)
     decoder_optimizer = optim.Adam(decoder.parameters(), lr=learning_rate * decoder_learning_ratio)
 
 
@@ -86,7 +86,7 @@ if __name__ == '__main__':
         encoder_optimizer.load_state_dict(encoder_optimizer_state)
 
         decoder_optimizer_state = torch.load(args['save_path_optimizer_decoder'], map_location="cpu")
-        encoder_optimizer.load_state_dict(decoder_optimizer_state)
+        decoder_optimizer.load_state_dict(decoder_optimizer_state)
         from_scratch = False
         logger.info('Continue training')
     except Exception as e:
