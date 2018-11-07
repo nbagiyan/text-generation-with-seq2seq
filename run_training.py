@@ -29,7 +29,10 @@ if __name__ == '__main__':
     parser.add_argument('--save_path_decoder')
     parser.add_argument('--save_path_optimizer_encoder')
     parser.add_argument('--save_path_optimizer_decoder')
+    parser.add_argument('--save_path_i2w')
+    parser.add_argument('--save_path_w2i')
     parser.add_argument('--use_pretrained')
+
     args = vars(parser.parse_args())
 
     hidden_size = 300
@@ -48,7 +51,7 @@ if __name__ == '__main__':
     logger.info('Reading data')
     df_all = pd.read_csv(args['input_data'])
     df_all.dropna(inplace = True)
-    lang1 = Lang()
+    lang1 = Lang(args['save_path_w2i'], args['save_path_i2w'])
     logger.info('Creating embeddings')
     lang1.addSentences(df_all.sample(frac = float(args['sample_ratio']), random_state=123)['headline'].values.tolist())
     dataset = ClickBaitDataset(df_all.sample(frac = float(args['sample_ratio']), random_state=123), lang1, EOS_token,
