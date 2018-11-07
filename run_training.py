@@ -73,22 +73,21 @@ if __name__ == '__main__':
 
 
     if USE_CUDA:
-        encoder = encoder.cuda()
-        decoder = decoder.cuda()
+        encoder = nn.DataParallel(encoder).cuda()
+        decoder = nn.DataParallel(decoder).cuda()
 
     try:
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         logger.info('Trying to load model')
-        encoder_state = torch.load(args['save_path_optimizer_encoder'], map_location=device)
+        encoder_state = torch.load(args['save_path_optimizer_encoder'], map_location="cpu")
         encoder.load_state_dict(encoder_state)
 
-        decoder_state = torch.load(args['save_path_optimizer_decoder'], map_location=device)
+        decoder_state = torch.load(args['save_path_optimizer_decoder'], map_location="cpu")
         decoder.load_state_dict(decoder_state)
 
-        encoder_optimizer_state = torch.load(args['save_path_optimizer_encoder'], map_location=device)
+        encoder_optimizer_state = torch.load(args['save_path_optimizer_encoder'], map_location="cpu")
         encoder_optimizer.load_state_dict(encoder_optimizer_state)
 
-        decoder_optimizer_state = torch.load(args['save_path_optimizer_decoder'], map_location=device)
+        decoder_optimizer_state = torch.load(args['save_path_optimizer_decoder'], map_location="cpu")
         encoder_optimizer.load_state_dict(decoder_optimizer_state)
         from_scratch = False
         logger.info('Continue training')
