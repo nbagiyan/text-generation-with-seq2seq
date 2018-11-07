@@ -120,12 +120,11 @@ if __name__ == '__main__':
         for batch in dataloader:
             # Get training data for this cycle
             input_batches, input_lengths = batch['input'], batch['length'].numpy().tolist()
-            print(input_batches)
-            print(input_lengths)
             input_batches, input_lengths = zip(*sorted(zip(input_batches, input_lengths), key=lambda x: x[1], reverse=True))
             input_batches, input_lengths = torch.stack(input_batches), list(input_lengths)
             print(input_batches)
-            print(input_lengths)
+            input_batches = input_batches[:, max(input_lengths)]
+            print(input_batches)
             input_batches = input_batches.transpose(0, 1)
             # Run the train function
 
