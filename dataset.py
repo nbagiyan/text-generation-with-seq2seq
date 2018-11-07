@@ -19,7 +19,7 @@ class ClickBaitDataset(Dataset):
         source = [self.lang.word2index[token] for token in x.split(' ')]
         if source[0] == 0:
             print(idx, x)
-        length = len(source)
+        length = len(source) + 1
         source = self.__pad_item(source)
         return {'input' : torch.LongTensor(source), 'length' : length}
 
