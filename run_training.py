@@ -77,11 +77,9 @@ if __name__ == '__main__':
     try:
         logger.info('Trying to load model')
         encoder_state = torch.load(args['save_path_optimizer_encoder'], map_location="cpu")
-        encoder_state = create_correct_state_dict(encoder_state)
         encoder.load_state_dict(encoder_state)
 
         decoder_state = torch.load(args['save_path_optimizer_decoder'], map_location="cpu")
-        decoder_state = create_correct_state_dict(decoder_state)
         decoder.load_state_dict(decoder_state)
 
         encoder_optimizer_state = torch.load(args['save_path_optimizer_encoder'], map_location="cpu")
