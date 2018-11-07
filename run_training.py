@@ -123,6 +123,7 @@ if __name__ == '__main__':
             input_batches, input_lengths = zip(*sorted(zip(input_batches, input_lengths), key=lambda x: x[1], reverse=True))
             input_batches, input_lengths = torch.stack(input_batches), list(input_lengths)
             # Run the train function
+            print(input_batches, input_lengths)
             loss = train(
                 input_batches, input_lengths, input_batches, input_lengths,
                 encoder, decoder,
