@@ -20,7 +20,7 @@ class ClickBaitDataset(Dataset):
         length = len(source)
         source = self.__pad_item(source)
         source.append(self.EOS_token)
-        return source, length
+        return {'input' : torch.LongTensor(source), 'length' : length}
 
     def __pad_item(self, x):
         if len(x) >= self.MAX_LENGTH:
