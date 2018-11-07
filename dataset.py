@@ -1,4 +1,6 @@
+import torch
 from torch.utils.data import Dataset
+
 
 class ClickBaitDataset(Dataset):
     def __init__(self, df, lang, EOS_token, PAD_token, MAX_LENGTH):
