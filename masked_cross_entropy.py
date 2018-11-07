@@ -41,7 +41,7 @@ def masked_cross_entropy(logits, target, length):
     log_probs_flat = lsft(logits_flat)
     print('log_probs_flat', log_probs_flat.size())
     # target_flat: (batch * max_len, 1)
-    print('target_flat', target_flat.size())
+    print('target', target.size())
     target_flat = target.view(-1, 1)
     print('target_flat', target_flat.size())
     # losses_flat: (batch * max_len, 1)
