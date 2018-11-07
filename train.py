@@ -22,8 +22,8 @@ def train(input_batches, input_lengths, target_batches, target_lengths, encoder,
     decoder_input = torch.LongTensor([SOS_token] * batch_size)
     m = Normal(0, 0.01)
     decoder_hidden = encoder_hidden[:1]# Use last (forward) hidden state from encoder
-    print(decoder_hidden.size())
-    decoder_hidden = decoder_hidden + m.sample(decoder_hidden.size())
+    noise = m.sample(decoder_hidden.size(0) * decoder_hidden.size(1) * decoder_hidden.size(3))
+    decoder_hidden = decoder_hidden + noise.view(decoder_hidden.size())
     max_target_length = max(target_lengths)
     all_decoder_outputs = torch.zeros(max_target_length, batch_size, decoder.output_size)
 
