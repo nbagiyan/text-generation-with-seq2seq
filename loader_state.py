@@ -1,8 +1,8 @@
-from collections import OrderedDict
+import torch
 
-def create_correct_state_dict(state_dict):
-    new_state_dict = OrderedDict()
-    for k, v in state_dict.items():
-        name = k[7:]  # remove `module.`
-        new_state_dict[name] = v
-    return new_state_dict
+def create_correct_state_dict(optimizer):
+    for state in optimizer.state.values():
+        for k, v in state.items():
+            if isinstance(v, torch.Tensor):
+                state[k] = v.cuda()
+    return optimizer

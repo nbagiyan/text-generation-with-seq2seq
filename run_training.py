@@ -82,11 +82,20 @@ if __name__ == '__main__':
         decoder_state = torch.load(args['save_path_decoder'], map_location="cpu")
         decoder.load_state_dict(decoder_state)
 
+        if USE_CUDA:
+            encoder = encoder.cuda()
+            decoder = decoder.cuda()
+
+        encoder_optimizer = optim.Adam(encoder.parameters(), lr=learning_rate)
         encoder_optimizer_state = torch.load(args['save_path_optimizer_encoder'], map_location="cpu")
         encoder_optimizer.load_state_dict(encoder_optimizer_state)
+        encoder_optimizer = create_correct_state_dict(encoder_optimizer)
 
+        decoder_optimizer = optim.Adam(decoder.parameters(), lr=learning_rate * decoder_learning_ratio)
         decoder_optimizer_state = torch.load(args['save_path_optimizer_decoder'], map_location="cpu")
         decoder_optimizer.load_state_dict(decoder_optimizer_state)
+        decoder_optimizer = create_correct_state_dict(decoder_optimizer)
+
         from_scratch = False
         logger.info('Continue training')
     except Exception as e:
@@ -97,8 +106,7 @@ if __name__ == '__main__':
     if USE_CUDA:
         encoder = encoder.cuda()
         decoder = decoder.cuda()
-        encoder_optimizer.cuda()
-        decoder_optimizer.cuda()
+
 
     print_loss_total = 0
     save_every = 500
