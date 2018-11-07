@@ -15,6 +15,8 @@ class ClickBaitDataset(Dataset):
     def __getitem__(self, idx):
         x, y = self.df.iloc[idx, 0], self.df.iloc[idx, 1]
         source = [self.lang.word2index[token] for token in x.split(' ')]
+        if source[0] == 0:
+            print(idx, x)
         length = len(source)
         source = self.__pad_item(source)
         source.append(self.EOS_token)
