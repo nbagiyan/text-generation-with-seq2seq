@@ -1,5 +1,6 @@
 from masked_cross_entropy import *
-from logger import logger
+from torch.distributions.normal import Normal
+
 PAD_token = 0
 SOS_token = 1
 EOS_token = 2
@@ -19,7 +20,8 @@ def train(input_batches, input_lengths, target_batches, target_lengths, encoder,
 
     # Prepare input and output variables
     decoder_input = torch.LongTensor([SOS_token] * batch_size)
-    decoder_hidden = encoder_hidden[:1] # Use last (forward) hidden state from encoder
+    m = Normal(0, 0.01)
+    decoder_hidden = encoder_hidden[:1] + m.sample(encoder_hidden[:1].size())# Use last (forward) hidden state from encoder
 
     max_target_length = max(target_lengths)
     all_decoder_outputs = torch.zeros(max_target_length, batch_size, decoder.output_size)

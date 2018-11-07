@@ -95,16 +95,15 @@ if __name__ == '__main__':
     save_every = 500
     batch_n = 0
     epoch = 0
-    print_every = 10
+    print_every = 100
     start = time.time()
 
     while epoch < n_epochs:
         epoch += 1
-        for batch in tqdm.tqdm(dataloader):
+        for batch in dataloader:
             # Get training data for this cycle
             input_batches, input_lengths = torch.stack(batch[0]), batch[1].numpy().tolist()
-            logger.info(input_batches.size())
-            # input_batches = input_batches.transpose(-1, 0)
+
             # Run the train function
             loss = train(
                 input_batches, input_lengths, input_batches, input_lengths,
