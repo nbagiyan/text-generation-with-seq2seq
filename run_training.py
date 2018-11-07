@@ -59,6 +59,7 @@ if __name__ == '__main__':
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=16, drop_last=True)
     logger.info('Finished')
 
+
     if USE_PRETRAINED:
         encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout, lang1.embedding_matrix)
         decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, lang1.embedding_matrix)
@@ -70,18 +71,23 @@ if __name__ == '__main__':
     encoder_optimizer = optim.Adam(encoder.parameters(), lr=learning_rate)
     decoder_optimizer = optim.Adam(decoder.parameters(), lr=learning_rate * decoder_learning_ratio)
 
+
+    if USE_CUDA:
+        encoder = encoder.cuda()
+        decoder = decoder.cuda()
+
     try:
         logger.info('Trying to load model')
-        encoder_state = torch.load(args['save_path_optimizer_encoder'], map_location="cpu")
+        encoder_state = torch.load(args['save_path_optimizer_encoder'], map_location="gpu")
         encoder.load_state_dict(encoder_state)
 
-        decoder_state = torch.load(args['save_path_optimizer_decoder'], map_location="cpu")
+        decoder_state = torch.load(args['save_path_optimizer_decoder'], map_location="gpu")
         decoder.load_state_dict(decoder_state)
 
-        encoder_optimizer_state = torch.load(args['save_path_optimizer_encoder'], map_location="cpu")
+        encoder_optimizer_state = torch.load(args['save_path_optimizer_encoder'], map_location="gpu")
         encoder_optimizer.load_state_dict(encoder_optimizer_state)
 
-        decoder_optimizer_state = torch.load(args['save_path_optimizer_decoder'], map_location="cpu")
+        decoder_optimizer_state = torch.load(args['save_path_optimizer_decoder'], map_location="gpu")
         encoder_optimizer.load_state_dict(decoder_optimizer_state)
         from_scratch = False
         logger.info('Continue training')
@@ -90,9 +96,7 @@ if __name__ == '__main__':
         logger.info('From scratch')
         pass
 
-    if USE_CUDA:
-        encoder = encoder.cuda()
-        decoder = decoder.cuda()
+
 
     print_loss_total = 0
     save_every = 500
