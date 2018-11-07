@@ -119,8 +119,9 @@ if __name__ == '__main__':
         epoch += 1
         for batch in dataloader:
             # Get training data for this cycle
-            input_batches, input_lengths = torch.stack(batch[0]), batch[1].numpy().tolist()
-
+            input_batches, input_lengths = batch[0], batch[1].numpy().tolist()
+            input_batches, input_lengths = zip(*sorted(zip(input_batches, input_lengths), key=lambda x: x[1], reverse=True))
+            input_batches, input_lengths = torch.stack(input_batches), list(input_lengths)
             # Run the train function
             loss = train(
                 input_batches, input_lengths, input_batches, input_lengths,

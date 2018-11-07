@@ -15,9 +15,10 @@ class ClickBaitDataset(Dataset):
     def __getitem__(self, idx):
         x, y = self.df.iloc[idx, 0], self.df.iloc[idx, 1]
         source = [self.lang.word2index[token] for token in x.split(' ')]
+        length = len(source)
         source = self.__pad_item(source)
         source.append(self.EOS_token)
-        return source, len(source)
+        return source, length
 
     def __pad_item(self, x):
         if len(x) >= self.MAX_LENGTH:
