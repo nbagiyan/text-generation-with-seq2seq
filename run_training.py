@@ -2,6 +2,7 @@ import argparse
 import pandas as pd
 import time
 from logger import logger
+from loader_state import create_correct_state_dict
 from torch.utils.data import DataLoader
 from lang import *
 from dataset import *
@@ -72,17 +73,15 @@ if __name__ == '__main__':
     decoder_optimizer = optim.Adam(decoder.parameters(), lr=learning_rate * decoder_learning_ratio)
 
 
-    if USE_CUDA:
-        encoder = nn.DataParallel(encoder).cuda()
-        decoder = nn.DataParallel(decoder).cuda()
 
     try:
         logger.info('Trying to load model')
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        encoder_state = torch.load(args['save_path_optimizer_encoder'], map_location=device)
+        encoder_state = torch.load(args['save_path_optimizer_encoder'], map_location="cpu")
+        encoder_state = create_correct_state_dict(encoder_state)
         encoder.load_state_dict(encoder_state)
 
-        decoder_state = torch.load(args['save_path_optimizer_decoder'], map_location=device)
+        decoder_state = torch.load(args['save_path_optimizer_decoder'], map_location="cpu")
+        decoder_state = create_correct_state_dict(decoder_state)
         decoder.load_state_dict(decoder_state)
 
         encoder_optimizer_state = torch.load(args['save_path_optimizer_encoder'], map_location="cpu")
@@ -97,7 +96,9 @@ if __name__ == '__main__':
         logger.info('From scratch')
         pass
 
-
+    if USE_CUDA:
+        encoder = encoder.cuda()
+        decoder = decoder.cuda()
 
     print_loss_total = 0
     save_every = 500
