@@ -21,11 +21,13 @@ class ClickBaitDataset(Dataset):
             print(idx, x)
         length = len(source)
         source = self.__pad_item(source)
-        source.append(self.EOS_token)
         return {'input' : torch.LongTensor(source), 'length' : length}
 
     def __pad_item(self, x):
         if len(x) >= self.MAX_LENGTH:
-            return x[:self.MAX_LENGTH]
+            x = x[:self.MAX_LENGTH]
+            x.append(self.EOS_token)
+            return x
         else:
-            return x + [self.PAD_token] * (self.MAX_LENGTH - len(x))
+            x.append(self.EOS_token)
+            return x + [self.PAD_token] * (self.MAX_LENGTH - len(x) - 1)
