@@ -69,7 +69,7 @@ if __name__ == '__main__':
         decoder = DecoderRNN(hidden_size, lang1.n_words, dropout)
 
     # Initialize optimizers and criterion
-    encoder_optimizer = optim.S(encoder.parameters(), lr=learning_rate)
+    encoder_optimizer = optim.Adam(encoder.parameters(), lr=learning_rate)
     decoder_optimizer = optim.Adam(decoder.parameters(), lr=learning_rate * decoder_learning_ratio)
 
 
