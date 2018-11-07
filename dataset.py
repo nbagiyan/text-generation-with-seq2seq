@@ -21,7 +21,7 @@ class ClickBaitDataset(Dataset):
             print(idx, x)
         length = len(source)
         source = self.__pad_item(source)
-        return torch.LongTensor(source), length
+        return {'input' : torch.LongTensor(source), 'length' : length}
 
     def __pad_item(self, x):
         if len(x) >= self.MAX_LENGTH:
