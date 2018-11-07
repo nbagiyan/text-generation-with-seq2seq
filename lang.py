@@ -10,7 +10,7 @@ class Lang(object):
         self.word2index = {}
         self.word2count = {}
         self.index2word = {0: "PAD", 1: "SOS", 2: "EOS"}
-        self.n_words = 2  # Count SOS and EOS
+        self.n_words = 3  # Count SOS and EOS
         self.save_path_w2i = save_path_w2i
         self.save_path_i2w = save_path_i2w
 
@@ -27,10 +27,10 @@ class Lang(object):
     def addWord(self, word):
 
         if word not in self.word2index:
+            self.n_words += 1
             self.word2index[word] = self.n_words
             self.word2count[word] = 1
             self.index2word[self.n_words] = word
-            self.n_words += 1
         else:
             self.word2count[word] += 1
 
