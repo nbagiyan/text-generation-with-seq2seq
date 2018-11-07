@@ -49,9 +49,9 @@ class Lang(object):
         logger.info('Finished')
 
     def __save_dicts(self):
-        with open(self.save_path_w2i) as f:
+        with open(self.save_path_w2i, 'w') as f:
             json.dump(self.word2index, f)
 
-        with open(self.save_path_i2w) as f:
+        with open(self.save_path_i2w, 'w') as f:
             json.dump(self.index2word, f)
 
