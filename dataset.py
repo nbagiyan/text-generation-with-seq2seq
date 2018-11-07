@@ -30,4 +30,4 @@ class ClickBaitDataset(Dataset):
             return x
         else:
             x.append(self.EOS_token)
-            return x + [self.PAD_token] * (self.MAX_LENGTH - len(x) - 1)
+            return x + [self.PAD_token] * (self.MAX_LENGTH - len(x) + 1)
