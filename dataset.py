@@ -17,17 +17,15 @@ class ClickBaitDataset(Dataset):
     def __getitem__(self, idx):
         x, y = self.df.iloc[idx, 0], self.df.iloc[idx, 1]
         source = [self.lang.word2index[token] for token in x.split(' ')]
-        if source[0] == 0:
-            print(idx, x)
-        length = len(source) + 1
-        source = self.__pad_item(source)
+        source, length = self.__pad_item(source)
         return {'input' : torch.LongTensor(source), 'length' : length}
 
     def __pad_item(self, x):
         if len(x) >= self.MAX_LENGTH:
             x = x[:self.MAX_LENGTH]
             x.append(self.EOS_token)
-            return x
+            return x, len(x)
         else:
             x.append(self.EOS_token)
-            return x + [self.PAD_token] * (self.MAX_LENGTH - len(x) + 1)
+            length = len(x)
+            return x + [self.PAD_token] * (self.MAX_LENGTH - len(x)), length
