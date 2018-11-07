@@ -1,15 +1,18 @@
 import tqdm
 import torch
 import torchtext
+import json
 from logger import logger
 
 class Lang(object):
-    def __init__(self):
+    def __init__(self, save_path_w2i, save_path_i2w):
         super(Lang, self).__init__()
         self.word2index = {}
         self.word2count = {}
         self.index2word = {0: "PAD", 1: "SOS", 2: "EOS"}
         self.n_words = 2  # Count SOS and EOS
+        self.save_path_w2i = save_path_w2i
+        self.save_path_i2w = save_path_i2w
 
     def addSentences(self, sentences_lst, create_embeddings = False):
         logger.info('started adding words')
@@ -19,6 +22,7 @@ class Lang(object):
         logger.info('Finished')
         if create_embeddings:
             self.create_embedding_matrix(torchtext.vocab.FastText(), 300)
+        self.__save_dicts()
 
     def addWord(self, word):
 
@@ -43,3 +47,11 @@ class Lang(object):
             else:
                 self.embedding_matrix[value] = pretrained_model[key]
         logger.info('Finished')
+
+    def __save_dicts(self):
+        with open(self.save_path_w2i) as f:
+            json.dump(self.word2index, f)
+
+        with open(self.save_path_i2w) as f:
+            json.dump(self.index2word, f)
+
