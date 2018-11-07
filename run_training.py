@@ -97,6 +97,8 @@ if __name__ == '__main__':
     if USE_CUDA:
         encoder = encoder.cuda()
         decoder = decoder.cuda()
+        encoder_optimizer.cuda()
+        decoder_optimizer.cuda()
 
     print_loss_total = 0
     save_every = 500
