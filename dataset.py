@@ -20,7 +20,7 @@ class ClickBaitDataset(Dataset):
         if source[0] == 0:
             print(idx, x)
         length = len(source)
-        # source = self.__pad_item(source)
+        source = self.__pad_item(source)
         return torch.LongTensor(source), length
 
     def __pad_item(self, x):
