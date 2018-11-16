@@ -184,9 +184,9 @@ if __name__ == '__main__':
 
                     if val_n % print_every == 0:
                         print_loss_avg = print_loss_total / batch_size
-                        print_summary = '-- Epoch:%d - Batch:%d - Val_loss:%.4f' % (epoch, batch_n, print_loss_avg)
+                        print_summary = 'LOSS_INFO: Epoch:%d - Batch:%d - Val_loss:%.4f' % (epoch, batch_n, print_loss_avg)
                         logger.info(print_summary)
-                        logger.info('-- Real sentence: {0}, Generated sentence {1}'.format(' '.join(real),
+                        logger.info('-- Real sentence: {0} \n, -- Generated sentence {1}'.format(' '.join(real),
                                                                                            ' '.join(generated))
                                     )
                         print_loss_total = 0
