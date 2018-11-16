@@ -59,8 +59,8 @@ if __name__ == '__main__':
     logger.info('Creating embeddings')
     df_sample = df_all.sample(frac = float(args['sample_ratio']), random_state=123)
 
-    df_train = df_sample.iloc[:-100000, :]
-    df_val = df_sample.iloc[-100000:, :]
+    df_train = df_sample.iloc[:-100000, :].copy()
+    df_val = df_sample.iloc[-100000:, :].copy()
 
     df_train.to_csv(args['save_path_train'], index=False)
     df_val.to_csv(args['save_path_val'], index=False)
