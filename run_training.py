@@ -59,19 +59,21 @@ if __name__ == '__main__':
     logger.info('Creating embeddings')
     df_sample = df_all.sample(frac = float(args['sample_ratio']), random_state=123)
 
-    # df_train = df_sample.iloc[:-100000, :].copy()
-    # df_val = df_sample.iloc[-100000:, :].copy()
+    df_train = df_sample.copy()
+    df_train = df_train.iloc[:-100000, :].copy()
+    df_val = df_sample.copy()
+    df_val = df_val.iloc[-100000:, :].copy()
 
-    # df_train.to_csv(args['save_path_train'], index=False)
-    # df_val.to_csv(args['save_path_val'], index=False)
+    df_train.to_csv(args['save_path_train'], index=False)
+    df_val.to_csv(args['save_path_val'], index=False)
 
     lang1.addSentences(df_sample['headline'].values.tolist())
 
     dataset_train = ClickBaitDataset(df_sample, lang1, EOS_token,PAD_token, MAX_LENGTH)
-    # dataset_val = ClickBaitDataset(df_val, lang1, EOS_token,PAD_token, MAX_LENGTH)
+    dataset_val = ClickBaitDataset(df_val, lang1, EOS_token,PAD_token, MAX_LENGTH)
 
     dataloader_train = DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True)
-    # dataloader_val = DataLoader(dataset_val, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True)
+    dataloader_val = DataLoader(dataset_val, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True)
 
     logger.info('Finished')
 
