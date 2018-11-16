@@ -173,6 +173,7 @@ if __name__ == '__main__':
             if batch_n % evaluate_every == 0:
                 val_n = 0
                 for batch in tqdm(dataloader_val):
+                    logger.info('evaluating batches')
                     val_n += batch_size
                     input_batches, input_lengths = batch['input'], batch['length'].numpy().tolist()
                     input_batches, input_lengths = zip(
