@@ -1,7 +1,7 @@
 import argparse
 import pandas as pd
 import time
-from logger import logger
+from evaluate import evaluate
 from loader_state import create_correct_state_dict
 from torch.utils.data import DataLoader
 from lang import *
@@ -32,6 +32,8 @@ if __name__ == '__main__':
     parser.add_argument('--save_path_optimizer_decoder')
     parser.add_argument('--save_path_i2w')
     parser.add_argument('--save_path_w2i')
+    parser.add_argument('--save_path_train')
+    parser.add_argument('--save_path_val')
     parser.add_argument('--use_pretrained')
 
     args = vars(parser.parse_args())
@@ -48,25 +50,43 @@ if __name__ == '__main__':
     learning_rate = 0.001
     decoder_learning_ratio = 5.0
     n_epochs = 100
+    evaluate_every = 10
 
     logger.info('Reading data')
     df_all = pd.read_csv(args['input_data'])
     df_all.dropna(inplace = True)
     lang1 = Lang(args['save_path_w2i'], args['save_path_i2w'])
     logger.info('Creating embeddings')
-    lang1.addSentences(df_all.sample(frac = float(args['sample_ratio']), random_state=123)['headline'].values.tolist())
-    dataset = ClickBaitDataset(df_all.sample(frac = float(args['sample_ratio']), random_state=123), lang1, EOS_token,
-                               PAD_token, MAX_LENGTH)
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=16, drop_last=True)
+    df_sample = df_all.sample(frac = float(args['sample_ratio']), random_state=123)
+
+    df_train = df_sample.iloc[:-100000, :]
+    df_val = df_sample.iloc[-100000:, :]
+
+    df_train.to_csv(args['save_path_train'], index=False)
+    df_val.to_csv(args['save_path_val'], index=False)
+
+    lang1.addSentences(df_sample['headline'].values.tolist())
+
+    dataset_train = ClickBaitDataset(df_train, lang1, EOS_token,PAD_token, MAX_LENGTH)
+    dataset_val = ClickBaitDataset(df_val, lang1, EOS_token,PAD_token, MAX_LENGTH)
+
+    dataloader_train = DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=16, drop_last=True)
+    dataloader_val = DataLoader(dataset_val, batch_size=batch_size, shuffle=True, num_workers=16, drop_last=True)
+
     logger.info('Finished')
 
 
     if USE_PRETRAINED:
-        encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout, lang1.embedding_matrix)
-        decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, lang1.embedding_matrix)
+        embedding = nn.Embedding(lang1.n_words, hidden_size)
+        embedding.load_state_dict({'weight': lang1.embedding_matrix})
+        embedding.weight.requires_grad = True
+
+        encoder = EncoderRNN(lang1.n_words, hidden_size, embedding, n_layers, dropout)
+        decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, embedding)
     else:
-        encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout)
-        decoder = DecoderRNN(hidden_size, lang1.n_words, dropout)
+        embedding = nn.Embedding(lang1.n_words, hidden_size)
+        encoder = EncoderRNN(lang1.n_words, hidden_size, embedding, n_layers, dropout)
+        decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, embedding)
 
     # Initialize optimizers and criterion
     encoder_optimizer = optim.Adam(encoder.parameters(), lr=learning_rate)
@@ -117,7 +137,7 @@ if __name__ == '__main__':
 
     while epoch < n_epochs:
         epoch += 1
-        for batch in dataloader:
+        for batch in dataloader_train:
             # Get training data for this cycle
             input_batches, input_lengths = batch['input'], batch['length'].numpy().tolist()
             input_batches, input_lengths = zip(*sorted(zip(input_batches, input_lengths), key=lambda x: x[1], reverse=True))
@@ -139,7 +159,7 @@ if __name__ == '__main__':
             if batch_n % print_every == 0:
                 print_loss_avg = print_loss_total / print_every
                 print_loss_total = 0
-                print_summary = 'Epoch:%d - Batch:%d - loss:%.4f' % (epoch, batch_n, print_loss_avg)
+                print_summary = 'Epoch:%d - Batch:%d - Train_loss:%.4f' % (epoch, batch_n, print_loss_avg)
                 logger.info(print_summary)
 
             if batch_n % save_every == 0:
@@ -149,5 +169,26 @@ if __name__ == '__main__':
                 torch.save(decoder_optimizer.state_dict(), args['save_path_optimizer_decoder'])
                 logger.info('Model saved on batch %d' % batch_n)
 
+            if batch_n % evaluate_every == 0:
+                val_n = 0
+                for batch in dataloader_val:
+                    val_n += batch_size
+                    input_batches, input_lengths = batch['input'], batch['length'].numpy().tolist()
+                    input_batches, input_lengths = zip(
+                        *sorted(zip(input_batches, input_lengths), key=lambda x: x[1], reverse=True))
+                    input_batches, input_lengths = torch.stack(input_batches), list(input_lengths)
+                    input_batches = input_batches[:, :max(input_lengths)]
+                    input_batches = input_batches.transpose(0, 1)
+
+                    val_loss, real, generated = evaluate(encoder, decoder, input_batches, input_lengths,
+                                                         input_batches, input_lengths, batch, lang1)
+                    print_loss_total += loss
+                print_loss_avg = print_loss_total / val_n
+                print_summary = '-- Epoch:%d - Batch:%d - Val_loss:%.4f' % (epoch, batch_n, print_loss_avg)
+                logger.info(print_summary)
+                print_loss_total = 0
+                logger.info('-- Real sentence: {0}, Generated sentence {1}'.format(' '.join(real),
+                                                                              ' '.join(generated))
+                            )
             torch.cuda.empty_cache()
 

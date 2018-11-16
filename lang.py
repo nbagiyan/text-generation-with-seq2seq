@@ -54,4 +54,4 @@ class Lang(object):
 
         with open(self.save_path_i2w, 'w') as f:
             json.dump(self.index2word, f)
-
+        logger.info('Saved')
