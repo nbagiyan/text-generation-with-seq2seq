@@ -1,6 +1,7 @@
 import argparse
 import pandas as pd
 import time
+from tqdm import tqdm
 from evaluate import evaluate
 from loader_state import create_correct_state_dict
 from torch.utils.data import DataLoader
@@ -171,7 +172,7 @@ if __name__ == '__main__':
 
             if batch_n % evaluate_every == 0:
                 val_n = 0
-                for batch in dataloader_val:
+                for batch in tqdm(dataloader_val):
                     val_n += batch_size
                     input_batches, input_lengths = batch['input'], batch['length'].numpy().tolist()
                     input_batches, input_lengths = zip(
