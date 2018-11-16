@@ -21,6 +21,10 @@ def evaluate(encoder, decoder, input_batches, input_lengths, target_batches, tar
     max_target_length = max(input_lengths)
     all_decoder_outputs = torch.zeros(max_target_length, batch_size, decoder.output_size)
 
+    if USE_CUDA:
+        decoder_input = decoder_input.cuda()
+        all_decoder_outputs = all_decoder_outputs.cuda()
+
     decoded_words = []
     real_words = []
 
@@ -32,6 +36,8 @@ def evaluate(encoder, decoder, input_batches, input_lengths, target_batches, tar
         all_decoder_outputs[t] = decoder_output
         topv, topi = decoder_output.data.topk(1)
         decoder_input = topi
+        if USE_CUDA:
+            decoder_input = decoder_input.cuda()
         ni = topi[0][0]
 
         if ni != EOS_token:
@@ -45,7 +51,7 @@ def evaluate(encoder, decoder, input_batches, input_lengths, target_batches, tar
 
     loss = masked_cross_entropy(
         all_decoder_outputs.transpose(0, 1).contiguous(),  # -> batch x seq
-        target_batches.transpose(0, 1).contiguous(),  # -> batch x seq
+        input_batches.transpose(0, 1).contiguous(),  # -> batch x seq
         target_lengths
     )
 
