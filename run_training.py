@@ -70,8 +70,8 @@ if __name__ == '__main__':
     dataset_train = ClickBaitDataset(df_train, lang1, EOS_token,PAD_token, MAX_LENGTH)
     dataset_val = ClickBaitDataset(df_val, lang1, EOS_token,PAD_token, MAX_LENGTH)
 
-    dataloader_train = DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=16, drop_last=True)
-    dataloader_val = DataLoader(dataset_val, batch_size=batch_size, shuffle=True, num_workers=16, drop_last=True)
+    dataloader_train = DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=2, drop_last=True)
+    dataloader_val = DataLoader(dataset_val, batch_size=batch_size, shuffle=True, num_workers=2, drop_last=True)
 
     logger.info('Finished')
 
