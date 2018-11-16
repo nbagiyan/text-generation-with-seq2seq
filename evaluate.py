@@ -42,8 +42,9 @@ def evaluate(encoder, decoder, input_batches, input_lengths, target_batches, tar
 
         if ni != EOS_token:
             decoded_words.append(lang1.index2word[ni.cpu().detach().numpy().reshape((1,))[0]])
-        elif decoded_words[-1] != '<EOS>':
-            decoded_words.append('<EOS>')
+        elif len(decoded_words) >= 1 :
+            if decoded_words[-1] != '<EOS>':
+                decoded_words.append('<EOS>')
 
         real_words.append(
             lang1.index2word[input_batches[t][0].cpu().detach().numpy().reshape((1,))[0]]
