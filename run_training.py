@@ -69,7 +69,7 @@ if __name__ == '__main__':
     df_train.to_csv(args['save_path_train'], index=False)
     df_val.to_csv(args['save_path_val'], index=False)
 
-    lang1.addSentences(df_sample['headline'].values.tolist())
+    lang1.addSentences(df_sample['headline'].values.tolist(), USE_PRETRAINED)
 
     dataset_train = ClickBaitDataset(df_train, lang1, EOS_token,PAD_token, MAX_LENGTH)
     dataset_val = ClickBaitDataset(df_val, lang1, EOS_token,PAD_token, MAX_LENGTH)
@@ -189,7 +189,7 @@ if __name__ == '__main__':
                         logger.info('-- Real sentence: {0} \n, -- Generated sentence {1}'.format(' '.join(real),
                                                                                            ' '.join(generated))
                                     )
-                        print_loss_total = 0
+                    print_loss_total = 0
 
                     val_n += 1
 
