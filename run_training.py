@@ -80,9 +80,8 @@ if __name__ == '__main__':
         encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout, lang1.embedding_matrix)
         decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, lang1.embedding_matrix)
     else:
-        embedding = nn.Embedding(lang1.n_words, hidden_size)
-        encoder = EncoderRNN(lang1.n_words, hidden_size, embedding, n_layers, dropout)
-        decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, embedding)
+        encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout)
+        decoder = DecoderRNN(hidden_size, lang1.n_words, dropout)
 
     # Initialize optimizers and criterion
     encoder_optimizer = optim.Adam(encoder.parameters(), lr=learning_rate)
