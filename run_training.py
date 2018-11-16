@@ -62,8 +62,8 @@ if __name__ == '__main__':
     # df_train = df_sample.iloc[:-100000, :].copy()
     # df_val = df_sample.iloc[-100000:, :].copy()
 
-    df_train.to_csv(args['save_path_train'], index=False)
-    df_val.to_csv(args['save_path_val'], index=False)
+    # df_train.to_csv(args['save_path_train'], index=False)
+    # df_val.to_csv(args['save_path_val'], index=False)
 
     lang1.addSentences(df_sample['headline'].values.tolist())
 
