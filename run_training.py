@@ -77,12 +77,8 @@ if __name__ == '__main__':
 
 
     if USE_PRETRAINED:
-        embedding = nn.Embedding(lang1.n_words, hidden_size)
-        embedding.load_state_dict({'weight': lang1.embedding_matrix})
-        embedding.weight.requires_grad = True
-
-        encoder = EncoderRNN(lang1.n_words, hidden_size, embedding, n_layers, dropout)
-        decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, embedding)
+        encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout, lang1.embedding_matrix)
+        decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, lang1.embedding_matrix)
     else:
         embedding = nn.Embedding(lang1.n_words, hidden_size)
         encoder = EncoderRNN(lang1.n_words, hidden_size, embedding, n_layers, dropout)
