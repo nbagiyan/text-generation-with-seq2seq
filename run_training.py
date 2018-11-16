@@ -127,6 +127,7 @@ if __name__ == '__main__':
         encoder = encoder.cuda()
         decoder = decoder.cuda()
 
+    logger.info('started training')
 
     print_loss_total = 0
     save_every = 500
