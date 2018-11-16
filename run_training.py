@@ -126,8 +126,6 @@ if __name__ == '__main__':
         encoder = encoder.cuda()
         decoder = decoder.cuda()
 
-    logger.info('started training')
-
     print_loss_total = 0
     save_every = 500
     batch_n = 0
@@ -139,7 +137,6 @@ if __name__ == '__main__':
         epoch += 1
         for batch in dataloader_train:
             # Get training data for this cycle
-            logger.info('creating batches')
             input_batches, input_lengths = batch['input'], batch['length'].numpy().tolist()
             input_batches, input_lengths = zip(*sorted(zip(input_batches, input_lengths), key=lambda x: x[1], reverse=True))
             input_batches, input_lengths = torch.stack(input_batches), list(input_lengths)
@@ -172,8 +169,7 @@ if __name__ == '__main__':
 
             if batch_n % evaluate_every == 0:
                 val_n = 0
-                for batch in tqdm.tqdm(dataloader_val):
-                    logger.info('evaluating batches')
+                for batch in dataloader_val:
                     val_n += batch_size
                     input_batches, input_lengths = batch['input'], batch['length'].numpy().tolist()
                     input_batches, input_lengths = zip(
@@ -186,12 +182,13 @@ if __name__ == '__main__':
                                                          input_batches, input_lengths, batch_size, lang1)
                     print_loss_total += loss
 
-                print_loss_avg = print_loss_total / val_n
-                print_summary = '-- Epoch:%d - Batch:%d - Val_loss:%.4f' % (epoch, batch_n, print_loss_avg)
-                logger.info(print_summary)
-                print_loss_total = 0
-                logger.info('-- Real sentence: {0}, Generated sentence {1}'.format(' '.join(real),
-                                                                              ' '.join(generated))
-                            )
+                    print_loss_avg = print_loss_total / batch_size
+                    print_summary = '-- Epoch:%d - Batch:%d - Val_loss:%.4f' % (epoch, batch_n, print_loss_avg)
+                    logger.info(print_summary)
+                    logger.info('-- Real sentence: {0}, Generated sentence {1}'.format(' '.join(real),
+                                                                                       ' '.join(generated))
+                                )
+                    print_loss_total = 0
+
             torch.cuda.empty_cache()
 
