@@ -2,14 +2,21 @@ import torch
 import torch.nn as nn
 
 class EncoderRNN(nn.Module):
-    def __init__(self, input_size, hidden_size, embedding_layer, n_layers=1, dropout=0.1):
+    def __init__(self, input_size, hidden_size, n_layers=1, dropout=0.1, embedding_weights=None):
         super(EncoderRNN, self).__init__()
 
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.n_layers = n_layers
         self.dropout = dropout
-        self.embedding = embedding_layer
+
+        if embedding_weights is None:
+            self.embedding = nn.Embedding(input_size, hidden_size)
+        else:
+            self.embedding = nn.Embedding(input_size, hidden_size)
+            self.embedding.load_state_dict({'weight': embedding_weights})
+            self.embedding.weight.requires_grad = True
+
         self.gru = nn.GRU(hidden_size, hidden_size, n_layers, dropout=self.dropout, bidirectional=True)
 
     def forward(self, input_seqs, input_lengths, hidden=None):

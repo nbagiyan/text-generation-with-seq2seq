@@ -4,11 +4,17 @@ import torch.nn.functional as F
 
 
 class DecoderRNN(nn.Module):
-    def __init__(self, hidden_size, output_size, dropout, embedding_layer):
+    def __init__(self, hidden_size, output_size, dropout, embedding_weights = None):
         super(DecoderRNN, self).__init__()
         self.hidden_size = hidden_size
         self.output_size = output_size
-        self.embedding = embedding_layer
+        if embedding_weights is None:
+            self.embedding = nn.Embedding(output_size, hidden_size)
+        else:
+            self.embedding = nn.Embedding(output_size, hidden_size)
+            self.embedding.load_state_dict({'weight': embedding_weights})
+            self.embedding.weight.requires_grad = True
+
         self.embedding_dropout = nn.Dropout(dropout)
         self.gru = nn.GRU(hidden_size, hidden_size)
         self.out = nn.Linear(hidden_size, output_size)
