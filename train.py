@@ -16,7 +16,7 @@ def train(input_batches, input_lengths, target_batches, target_lengths, encoder,
     loss = 0  # Added onto for each word
     if USE_CUDA:
         input_batches = input_batches.cuda()
-        target_batches = target_batches.cuda()
+        # target_batches = target_batches.cuda()
 
     # Run words through encoder
     encoder_outputs, encoder_hidden = encoder(input_batches, input_lengths, None)
@@ -50,7 +50,7 @@ def train(input_batches, input_lengths, target_batches, target_lengths, encoder,
             )
 
             all_decoder_outputs[t] = decoder_output
-            decoder_input = target_batches[t]  # Next input is current target
+            decoder_input = input_batches[t]  # Next input is current target
 
     else:
         # Run through decoder one time step at a time
@@ -67,7 +67,7 @@ def train(input_batches, input_lengths, target_batches, target_lengths, encoder,
 
     loss = masked_cross_entropy(
         all_decoder_outputs.transpose(0, 1).contiguous(),  # -> batch x seq
-        target_batches.transpose(0, 1).contiguous(),  # -> batch x seq
+        input_batches.transpose(0, 1).contiguous(),  # -> batch x seq
         target_lengths
     )
 
