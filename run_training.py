@@ -62,9 +62,9 @@ if __name__ == '__main__':
 
     val_shape = int(df_sample.shape[0] * 0.02)
     df_train = df_sample.copy()
-    df_train = df_train.iloc[:-val_shape, :]
+    df_train = df_train.iloc[:-10000, :]
     df_val = df_sample.copy()
-    df_val = df_val.iloc[-val_shape:, :]
+    df_val = df_val.iloc[-10000:, :]
 
     df_train.to_csv(args['save_path_train'], index=False)
     df_val.to_csv(args['save_path_val'], index=False)
