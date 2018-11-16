@@ -51,7 +51,7 @@ if __name__ == '__main__':
     learning_rate = 0.001
     decoder_learning_ratio = 5.0
     n_epochs = 100
-    evaluate_every = 10
+    evaluate_every = 1000
 
     logger.info('Reading data')
     df_all = pd.read_csv(args['input_data'])
@@ -130,7 +130,7 @@ if __name__ == '__main__':
     save_every = 500
     batch_n = 0
     epoch = 0
-    print_every = 1
+    print_every = 150
     start = time.time()
 
     while epoch < n_epochs:
@@ -182,13 +182,16 @@ if __name__ == '__main__':
                                                          input_batches, input_lengths, batch_size, lang1)
                     print_loss_total += loss
 
-                    print_loss_avg = print_loss_total / batch_size
-                    print_summary = '-- Epoch:%d - Batch:%d - Val_loss:%.4f' % (epoch, batch_n, print_loss_avg)
-                    logger.info(print_summary)
-                    logger.info('-- Real sentence: {0}, Generated sentence {1}'.format(' '.join(real),
-                                                                                       ' '.join(generated))
-                                )
-                    print_loss_total = 0
+                    if val_n % print_every == 0:
+                        print_loss_avg = print_loss_total / batch_size
+                        print_summary = '-- Epoch:%d - Batch:%d - Val_loss:%.4f' % (epoch, batch_n, print_loss_avg)
+                        logger.info(print_summary)
+                        logger.info('-- Real sentence: {0}, Generated sentence {1}'.format(' '.join(real),
+                                                                                           ' '.join(generated))
+                                    )
+                        print_loss_total = 0
+
+                    val_n += 1
 
             torch.cuda.empty_cache()
 
