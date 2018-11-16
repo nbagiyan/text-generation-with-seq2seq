@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
     lang1.addSentences(df_sample['headline'].values.tolist())
 
-    dataset_train = ClickBaitDataset(df_sample, lang1, EOS_token,PAD_token, MAX_LENGTH)
+    dataset_train = ClickBaitDataset(df_train, lang1, EOS_token,PAD_token, MAX_LENGTH)
     dataset_val = ClickBaitDataset(df_val, lang1, EOS_token,PAD_token, MAX_LENGTH)
 
     dataloader_train = DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True)
@@ -180,8 +180,9 @@ if __name__ == '__main__':
                     input_batches = input_batches.transpose(0, 1)
 
                     val_loss, real, generated = evaluate(encoder, decoder, input_batches, input_lengths,
-                                                         input_batches, input_lengths, batch, lang1)
+                                                         input_batches, input_lengths, batch_size, lang1)
                     print_loss_total += loss
+
                 print_loss_avg = print_loss_total / val_n
                 print_summary = '-- Epoch:%d - Batch:%d - Val_loss:%.4f' % (epoch, batch_n, print_loss_avg)
                 logger.info(print_summary)
