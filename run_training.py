@@ -132,7 +132,7 @@ if __name__ == '__main__':
     save_every = 500
     batch_n = 0
     epoch = 0
-    print_every = 100
+    print_every = 1
     start = time.time()
 
     while epoch < n_epochs:
