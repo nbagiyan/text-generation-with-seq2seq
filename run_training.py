@@ -135,6 +135,7 @@ if __name__ == '__main__':
         epoch += 1
         for batch in dataloader_train:
             # Get training data for this cycle
+            logger.info('creating batches')
             input_batches, input_lengths = batch['input'], batch['length'].numpy().tolist()
             input_batches, input_lengths = zip(*sorted(zip(input_batches, input_lengths), key=lambda x: x[1], reverse=True))
             input_batches, input_lengths = torch.stack(input_batches), list(input_lengths)
