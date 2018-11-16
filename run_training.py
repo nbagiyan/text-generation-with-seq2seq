@@ -131,61 +131,63 @@ if __name__ == '__main__':
     print_every = 1
     start = time.time()
 
-    while epoch < n_epochs:
-        epoch += 1
-        for batch in dataloader_train:
-            # Get training data for this cycle
-            logger.info('creating batches')
-            input_batches, input_lengths = batch['input'], batch['length'].numpy().tolist()
-            input_batches, input_lengths = zip(*sorted(zip(input_batches, input_lengths), key=lambda x: x[1], reverse=True))
-            input_batches, input_lengths = torch.stack(input_batches), list(input_lengths)
-            input_batches = input_batches[:, :max(input_lengths)]
-            input_batches = input_batches.transpose(0, 1)
-            # Run the train function
+    try:
+        while epoch < n_epochs:
+            epoch += 1
+            for batch in dataloader_train:
+                # Get training data for this cycle
+                logger.info('creating batches')
+                input_batches, input_lengths = batch['input'], batch['length'].numpy().tolist()
+                input_batches, input_lengths = zip(*sorted(zip(input_batches, input_lengths), key=lambda x: x[1], reverse=True))
+                input_batches, input_lengths = torch.stack(input_batches), list(input_lengths)
+                input_batches = input_batches[:, :max(input_lengths)]
+                input_batches = input_batches.transpose(0, 1)
+                # Run the train function
 
-            loss = train(
-                input_batches, input_lengths, input_batches, input_lengths,
-                encoder, decoder,
-                encoder_optimizer, decoder_optimizer, batch_size, clip
-            )
+                loss = train(
+                    input_batches, input_lengths, input_batches, input_lengths,
+                    encoder, decoder,
+                    encoder_optimizer, decoder_optimizer, batch_size, clip
+                )
 
-            # Keep track of loss
-            print_loss_total += loss
-            batch_n += 1
+                # Keep track of loss
+                print_loss_total += loss
+                batch_n += 1
 
-            if batch_n % print_every == 0:
-                print_loss_avg = print_loss_total / print_every
-                print_loss_total = 0
-                print_summary = 'Epoch:%d - Batch:%d - Train_loss:%.4f' % (epoch, batch_n, print_loss_avg)
-                logger.info(print_summary)
+                if batch_n % print_every == 0:
+                    print_loss_avg = print_loss_total / print_every
+                    print_loss_total = 0
+                    print_summary = 'Epoch:%d - Batch:%d - Train_loss:%.4f' % (epoch, batch_n, print_loss_avg)
+                    logger.info(print_summary)
 
-            if batch_n % save_every == 0:
-                torch.save(encoder.state_dict(), args['save_path_encoder'])
-                torch.save(decoder.state_dict(), args['save_path_decoder'])
-                torch.save(encoder_optimizer.state_dict(), args['save_path_optimizer_encoder'])
-                torch.save(decoder_optimizer.state_dict(), args['save_path_optimizer_decoder'])
-                logger.info('Model saved on batch %d' % batch_n)
+                if batch_n % save_every == 0:
+                    torch.save(encoder.state_dict(), args['save_path_encoder'])
+                    torch.save(decoder.state_dict(), args['save_path_decoder'])
+                    torch.save(encoder_optimizer.state_dict(), args['save_path_optimizer_encoder'])
+                    torch.save(decoder_optimizer.state_dict(), args['save_path_optimizer_decoder'])
+                    logger.info('Model saved on batch %d' % batch_n)
 
-            if batch_n % evaluate_every == 0:
-                val_n = 0
-                for batch in dataloader_val:
-                    val_n += batch_size
-                    input_batches, input_lengths = batch['input'], batch['length'].numpy().tolist()
-                    input_batches, input_lengths = zip(
-                        *sorted(zip(input_batches, input_lengths), key=lambda x: x[1], reverse=True))
-                    input_batches, input_lengths = torch.stack(input_batches), list(input_lengths)
-                    input_batches = input_batches[:, :max(input_lengths)]
-                    input_batches = input_batches.transpose(0, 1)
+                if batch_n % evaluate_every == 0:
+                    val_n = 0
+                    for batch in dataloader_val:
+                        val_n += batch_size
+                        input_batches, input_lengths = batch['input'], batch['length'].numpy().tolist()
+                        input_batches, input_lengths = zip(
+                            *sorted(zip(input_batches, input_lengths), key=lambda x: x[1], reverse=True))
+                        input_batches, input_lengths = torch.stack(input_batches), list(input_lengths)
+                        input_batches = input_batches[:, :max(input_lengths)]
+                        input_batches = input_batches.transpose(0, 1)
 
-                    val_loss, real, generated = evaluate(encoder, decoder, input_batches, input_lengths,
-                                                         input_batches, input_lengths, batch, lang1)
-                    print_loss_total += loss
-                print_loss_avg = print_loss_total / val_n
-                print_summary = '-- Epoch:%d - Batch:%d - Val_loss:%.4f' % (epoch, batch_n, print_loss_avg)
-                logger.info(print_summary)
-                print_loss_total = 0
-                logger.info('-- Real sentence: {0}, Generated sentence {1}'.format(' '.join(real),
-                                                                              ' '.join(generated))
-                            )
-            torch.cuda.empty_cache()
-
+                        val_loss, real, generated = evaluate(encoder, decoder, input_batches, input_lengths,
+                                                             input_batches, input_lengths, batch, lang1)
+                        print_loss_total += loss
+                    print_loss_avg = print_loss_total / val_n
+                    print_summary = '-- Epoch:%d - Batch:%d - Val_loss:%.4f' % (epoch, batch_n, print_loss_avg)
+                    logger.info(print_summary)
+                    print_loss_total = 0
+                    logger.info('-- Real sentence: {0}, Generated sentence {1}'.format(' '.join(real),
+                                                                                  ' '.join(generated))
+                                )
+                torch.cuda.empty_cache()
+    except Exception as e:
+        logger.exception(e)
