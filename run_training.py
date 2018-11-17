@@ -1,10 +1,10 @@
 import argparse
 import pandas as pd
 import time
-from tqdm import tqdm
 from evaluate import evaluate
 from loader_state import create_correct_state_dict
 from torch.utils.data import DataLoader
+from normalize_text import normalize_string
 from lang import *
 from dataset import *
 from encoder import *
@@ -21,7 +21,6 @@ MAX_LENGTH = 15
 
 if __name__ == '__main__':
 
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--input_data')
     parser.add_argument('--batch_size')
@@ -36,14 +35,16 @@ if __name__ == '__main__':
     parser.add_argument('--save_path_train')
     parser.add_argument('--save_path_val')
     parser.add_argument('--use_pretrained')
-
+    parser.add_argument('--val_ratio')
     args = vars(parser.parse_args())
 
     hidden_size = 300
     n_layers = int(args['n_layers'])
     dropout = 0.1
     batch_size = int(args['batch_size'])
+    val_ratio = float(args['val_ratio'])
     USE_PRETRAINED = int(args['use_pretrained'])
+
 
     # Configure training/optimization
     clip = 50.0
@@ -56,16 +57,20 @@ if __name__ == '__main__':
     logger.info('Reading data')
     df_all = pd.read_csv(args['input_data'])
     df_all.dropna(inplace = True)
+
     lang1 = Lang(args['save_path_w2i'], args['save_path_i2w'])
-    logger.info('Creating embeddings')
     df_sample = df_all.sample(frac = float(args['sample_ratio']), random_state=123)
+    df_sample['headline'] = df_sample['headline'].apply(normalize_string)
 
-    val_shape = int(df_sample.shape[0] * 0.02)
+    val_shape = int(df_sample.shape[0]*1.0 * val_ratio)
+
+    logger.info('Train size:', df_sample.shape[0] - val_shape)
+    logger.info('Validation size:', val_shape)
+
     df_train = df_sample.copy()
-    df_train = df_train.iloc[:-1000, :]
+    df_train = df_train.iloc[:-val_shape, :]
     df_val = df_sample.copy()
-    df_val = df_val.iloc[-1000:, :]
-
+    df_val = df_val.iloc[-val_shape:, :]
     df_train.to_csv(args['save_path_train'], index=False)
     df_val.to_csv(args['save_path_val'], index=False)
 
@@ -73,7 +78,7 @@ if __name__ == '__main__':
 
     dataset_train = ClickBaitDataset(df_train, lang1, EOS_token,PAD_token, MAX_LENGTH)
     dataset_val = ClickBaitDataset(df_val, lang1, EOS_token,PAD_token, MAX_LENGTH)
-
+    logger.info('Creating both train and val dataloader')
     dataloader_train = DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True)
     dataloader_val = DataLoader(dataset_val, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True)
 
@@ -83,6 +88,7 @@ if __name__ == '__main__':
     if USE_PRETRAINED:
         encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout, lang1.embedding_matrix)
         decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, lang1.embedding_matrix)
+        logger.info('Using pretrained embeddings')
     else:
         encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout)
         decoder = DecoderRNN(hidden_size, lang1.n_words, dropout)
@@ -131,6 +137,7 @@ if __name__ == '__main__':
     batch_n = 0
     epoch = 0
     print_every = 125
+    print_every_val = 10
     start = time.time()
 
     while epoch < n_epochs:
@@ -182,7 +189,7 @@ if __name__ == '__main__':
                                                          input_batches, input_lengths, batch_size, lang1)
                     print_loss_total += loss
 
-                    if val_n % print_every == 0:
+                    if val_n % print_every_val == 0:
                         print_loss_avg = print_loss_total / batch_size
                         print_summary = 'LOSS_INFO: Epoch:%d - Batch:%d - Val_loss:%.4f' % (epoch, batch_n, print_loss_avg)
                         logger.info(print_summary)

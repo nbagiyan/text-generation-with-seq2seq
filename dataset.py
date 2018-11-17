@@ -1,5 +1,8 @@
 import torch
+import unicodedata
+import re
 from torch.utils.data import Dataset
+
 
 
 class ClickBaitDataset(Dataset):
@@ -29,3 +32,4 @@ class ClickBaitDataset(Dataset):
             x.append(self.EOS_token)
             length = len(x)
             return x + [self.PAD_token] * (self.MAX_LENGTH - len(x) + 1), length
+
