@@ -39,7 +39,7 @@ def train(input_batches, input_lengths, target_batches, target_lengths, encoder,
         decoder_input = decoder_input.cuda()
         all_decoder_outputs = all_decoder_outputs.cuda()
 
-    teacher_forcing_ratio = 0.5
+    teacher_forcing_ratio = 0.35
     use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
 
     if use_teacher_forcing:
