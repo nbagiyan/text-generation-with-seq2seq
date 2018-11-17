@@ -17,7 +17,7 @@ def evaluate(encoder, decoder, input_batches, input_lengths, target_batches, tar
 
     encoder_outputs, encoder_hidden = encoder(input_batches, input_lengths, None)
     decoder_input = torch.LongTensor([SOS_token] * batch_size)
-    decoder_hidden = encoder_hidden[:1]# Use last (forward) hidden state from encoder
+    decoder_hidden = encoder_hidden[:decoder.n_layers]# Use last (forward) hidden state from encoder
     max_target_length = max(input_lengths)
     all_decoder_outputs = torch.zeros(max_target_length, batch_size, decoder.output_size)
 
