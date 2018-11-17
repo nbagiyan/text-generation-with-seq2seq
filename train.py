@@ -24,7 +24,7 @@ def train(input_batches, input_lengths, target_batches, target_lengths, encoder,
     # Prepare input and output variables
     decoder_input = torch.LongTensor([SOS_token] * batch_size)
     m = Normal(0, 0.01)
-    decoder_hidden = encoder_hidden[:1]# Use last (forward) hidden state from encoder
+    decoder_hidden = encoder_hidden[:decoder.n_layers]# Use last (forward) hidden state from encoder
     noise = m.sample(decoder_hidden.size())
 
     if USE_CUDA:
