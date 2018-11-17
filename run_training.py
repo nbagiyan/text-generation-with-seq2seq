@@ -137,7 +137,7 @@ if __name__ == '__main__':
     batch_n = 0
     epoch = 0
     print_every = 125
-    print_every_val = 10
+    print_every_val = 100
     start = time.time()
 
     while epoch < n_epochs:
