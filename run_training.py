@@ -198,5 +198,7 @@ if __name__ == '__main__':
                                                                                            ' '.join(generated)))
                     val_n += 1
 
+            print_loss_total = 0
+
             torch.cuda.empty_cache()
 
