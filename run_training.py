@@ -197,8 +197,8 @@ if __name__ == '__main__':
                         logger.info('\n-- Real sentence: {0} \n, -- Generated sentence: {1}'.format(' '.join(real),
                                                                                            ' '.join(generated)))
                     val_n += 1
+                print_loss_total = 0
 
-            print_loss_total = 0
 
             torch.cuda.empty_cache()
 
