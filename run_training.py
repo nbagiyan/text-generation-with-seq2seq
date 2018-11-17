@@ -64,8 +64,8 @@ if __name__ == '__main__':
 
     val_shape = int(df_sample.shape[0]*1.0 * val_ratio)
 
-    logger.info('Train size:', df_sample.shape[0] - val_shape)
-    logger.info('Validation size:', val_shape)
+    logger.info('Train size:', str(df_sample.shape[0] - val_shape))
+    logger.info('Validation size:', str(val_shape))
 
     df_train = df_sample.copy()
     df_train = df_train.iloc[:-val_shape, :]
