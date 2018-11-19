@@ -54,7 +54,7 @@ if __name__ == '__main__':
     learning_rate = 0.001
     decoder_learning_ratio = 5.0
     n_epochs = 100
-    evaluate_every = 2500
+    evaluate_every = 125
 
     logger.info('Reading data')
     df_all = pd.read_csv(args['input_data'])
