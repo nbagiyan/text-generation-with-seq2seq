@@ -9,7 +9,7 @@ MAX_LENGTH = 15
 USE_CUDA = 1
 
 def train(input_batches, input_lengths, target_batches, target_lengths, encoder, decoder, encoder_optimizer,
-          decoder_optimizer, batch_size, clip):
+          decoder_optimizer, batch_size, clip, teacher_forcing_ratio):
     # Zero gradients of both optimizers
     encoder_optimizer.zero_grad()
     decoder_optimizer.zero_grad()
@@ -39,7 +39,6 @@ def train(input_batches, input_lengths, target_batches, target_lengths, encoder,
         decoder_input = decoder_input.cuda()
         all_decoder_outputs = all_decoder_outputs.cuda()
 
-    teacher_forcing_ratio = 0.35
     use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
 
     if use_teacher_forcing:

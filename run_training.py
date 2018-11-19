@@ -36,6 +36,7 @@ if __name__ == '__main__':
     parser.add_argument('--save_path_val')
     parser.add_argument('--use_pretrained')
     parser.add_argument('--val_ratio')
+    parser.add_argument('--teacher_forcing_ratio')
     args = vars(parser.parse_args())
 
     hidden_size = 300
@@ -43,6 +44,7 @@ if __name__ == '__main__':
     dropout = 0.1
     batch_size = int(args['batch_size'])
     val_ratio = float(args['val_ratio'])
+    teacher_forcing_ratio = float(args['teacher_forcing_ratio'])
     USE_PRETRAINED = int(args['use_pretrained'])
 
 
@@ -154,7 +156,7 @@ if __name__ == '__main__':
             loss = train(
                 input_batches, input_lengths, input_batches, input_lengths,
                 encoder, decoder,
-                encoder_optimizer, decoder_optimizer, batch_size, clip
+                encoder_optimizer, decoder_optimizer, batch_size, clip, teacher_forcing_ratio
             )
 
             # Keep track of loss
@@ -194,7 +196,7 @@ if __name__ == '__main__':
                         print_loss_total = 0
                         print_summary = 'LOSS_INFO: Epoch:%d - Batch:%d - Val_loss:%.4f' % (epoch, batch_n, print_loss_avg)
                         logger.info(print_summary)
-                        logger.info('\n-- Real sentence: {0} \n, -- Generated sentence: {1}'.format(' '.join(real),
+                        logger.info('\n-- Real sentence: {0},\n-- Generated sentence: {1}'.format(' '.join(real),
                                                                                            ' '.join(generated)))
                     val_n += 1
                 print_loss_total = 0
