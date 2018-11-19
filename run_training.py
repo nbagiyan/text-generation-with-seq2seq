@@ -54,7 +54,7 @@ if __name__ == '__main__':
     learning_rate = 0.001
     decoder_learning_ratio = 5.0
     n_epochs = 100
-    evaluate_every = 1000
+    evaluate_every = 2000
 
     logger.info('Reading data')
     df_all = pd.read_csv(args['input_data'])
@@ -139,7 +139,7 @@ if __name__ == '__main__':
     batch_n = 0
     epoch = 0
     print_every = 125
-    print_every_val = 250
+    print_every_val = 125
     start = time.time()
 
     while epoch < n_epochs:
