@@ -19,7 +19,7 @@ def train(input_batches, input_lengths, target_batches, target_lengths, encoder,
         # target_batches = target_batches.cuda()
 
     # Run words through encoder
-    encoder_outputs, encoder_hidden, encoder_cell = encoder(input_batches, input_lengths, None)
+    encoder_outputs, encoder_hidden, encoder_cell = encoder(input_batches, input_lengths)
 
     # Prepare input and output variables
     decoder_input = torch.LongTensor([SOS_token] * batch_size)
