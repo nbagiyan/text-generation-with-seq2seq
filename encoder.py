@@ -19,11 +19,11 @@ class EncoderRNN(nn.Module):
 
         self.gru = nn.LSTM(hidden_size, hidden_size, n_layers, dropout=self.dropout, bidirectional=True)
 
-    def forward(self, input_seqs, input_lengths, hidden=None):
+    def forward(self, input_seqs, input_lengths, hidden=None, cell=None):
         # Note: we run this all at once (over multiple batches of multiple sequences)
         embedded = self.embedding(input_seqs)
         packed = torch.nn.utils.rnn.pack_padded_sequence(embedded, input_lengths)
-        outputs, hidden = self.gru(packed, hidden)
+        outputs, (hidden, cell) = self.gru(packed, hidden, cell)
         outputs, output_lengths = torch.nn.utils.rnn.pad_packed_sequence(outputs)  # unpack (back to padded)
         outputs = outputs[:, :, :self.hidden_size] + outputs[:, :, self.hidden_size:]  # Sum bidirectional outputs
-        return outputs, hidden
+        return outputs, hidden, cell

@@ -19,18 +19,20 @@ def train(input_batches, input_lengths, target_batches, target_lengths, encoder,
         # target_batches = target_batches.cuda()
 
     # Run words through encoder
-    encoder_outputs, encoder_hidden = encoder(input_batches, input_lengths, None)
+    encoder_outputs, encoder_hidden, encoder_cell = encoder(input_batches, input_lengths, None)
 
     # Prepare input and output variables
     decoder_input = torch.LongTensor([SOS_token] * batch_size)
     m = Normal(0, 0.01)
     decoder_hidden = encoder_hidden[:decoder.n_layers]# Use last (forward) hidden state from encoder
+    decoder_cell = encoder_cell[:decoder.n_layers]
     noise = m.sample(decoder_hidden.size())
 
     if USE_CUDA:
         noise = noise.cuda()
 
     decoder_hidden = decoder_hidden + noise
+
     max_target_length = max(target_lengths)
     all_decoder_outputs = torch.zeros(max_target_length, batch_size, decoder.output_size)
 
@@ -44,8 +46,8 @@ def train(input_batches, input_lengths, target_batches, target_lengths, encoder,
     if use_teacher_forcing:
     # Run through decoder one time step at a time
         for t in range(max_target_length):
-            decoder_output, decoder_hidden = decoder(
-                decoder_input, decoder_hidden
+            decoder_output, decoder_hidden, decoder_cell = decoder(
+                decoder_input, decoder_hidden, decoder_cell
             )
 
             all_decoder_outputs[t] = decoder_output
@@ -54,8 +56,8 @@ def train(input_batches, input_lengths, target_batches, target_lengths, encoder,
     else:
         # Run through decoder one time step at a time
         for t in range(max_target_length):
-            decoder_output, decoder_hidden = decoder(
-                decoder_input, decoder_hidden
+            decoder_output, decoder_hidden, decoder_cell = decoder(
+                decoder_input, decoder_hidden, decoder_cell
             )
 
             all_decoder_outputs[t] = decoder_output

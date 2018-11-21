@@ -20,15 +20,15 @@ class DecoderRNN(nn.Module):
         self.gru = nn.LSTM(hidden_size, hidden_size, n_layers, dropout=dropout_p)
         self.out = nn.Linear(hidden_size, output_size)
 
-    def forward(self, input, hidden):
+    def forward(self, input, hidden, cell):
         batch_size = input.size(0)
         output = self.embedding(input).view(1, 1, -1)
         output = self.embedding_dropout(output)
         output = output.view(1, batch_size, self.hidden_size)
         output = F.relu(output)
-        output, hidden = self.gru(output, hidden)
+        output, (hidden, cell) = self.gru(output, hidden, cell)
         output = self.out(output[0])
-        return output.squeeze(0), hidden
+        return output.squeeze(0), hidden, cell
 
     def initHidden(self):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
