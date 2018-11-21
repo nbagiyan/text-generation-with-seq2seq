@@ -17,7 +17,7 @@ class DecoderRNN(nn.Module):
             self.embedding.weight.requires_grad = True
 
         self.embedding_dropout = nn.Dropout(dropout)
-        self.gru = nn.GRU(hidden_size, hidden_size, n_layers, dropout=dropout_p)
+        self.gru = nn.LSTM(hidden_size, hidden_size, n_layers, dropout=dropout_p)
         self.out = nn.Linear(hidden_size, output_size)
 
     def forward(self, input, hidden):

@@ -17,7 +17,7 @@ class EncoderRNN(nn.Module):
             self.embedding.load_state_dict({'weight': embedding_weights})
             self.embedding.weight.requires_grad = True
 
-        self.gru = nn.GRU(hidden_size, hidden_size, n_layers, dropout=self.dropout, bidirectional=True)
+        self.gru = nn.LSTM(hidden_size, hidden_size, n_layers, dropout=self.dropout, bidirectional=True)
 
     def forward(self, input_seqs, input_lengths, hidden=None):
         # Note: we run this all at once (over multiple batches of multiple sequences)
