@@ -192,15 +192,13 @@ if __name__ == '__main__':
                     print_loss_total += loss
 
                     if val_n % print_every_val == 0:
-                        print_loss_avg = print_loss_total / print_every_val
-                        print_loss_total = 0
-                        print_summary = 'LOSS_INFO: Epoch:%d - Batch:%d - Val_loss:%.4f' % (epoch, batch_n, print_loss_avg)
-                        logger.info(print_summary)
                         logger.info('\n-- Real sentence: {0},\n-- Generated sentence: {1}'.format(' '.join(real),
                                                                                            ' '.join(generated)))
                     val_n += 1
+                print_loss_avg = print_loss_total / val_n
                 print_loss_total = 0
-
+                print_summary = 'VAL_LOSS_INFO: Epoch:%d - Batch:%d - Val_loss:%.4f' % (epoch, batch_n, print_loss_avg)
+                logger.info(print_summary)
 
             torch.cuda.empty_cache()
 

@@ -15,9 +15,10 @@ def evaluate(encoder, decoder, input_batches, input_lengths, target_batches, tar
     if USE_CUDA:
         input_batches = input_batches.cuda()
 
-    encoder_outputs, encoder_hidden = encoder(input_batches, input_lengths, None)
+    encoder_outputs, encoder_hidden, encoder_cell = encoder(input_batches, input_lengths)
     decoder_input = torch.LongTensor([SOS_token] * batch_size)
     decoder_hidden = encoder_hidden[:decoder.n_layers]# Use last (forward) hidden state from encoder
+    decoder_cell = encoder_cell[:decoder.n_layers]
     max_target_length = max(input_lengths)
     all_decoder_outputs = torch.zeros(max_target_length, batch_size, decoder.output_size)
 
@@ -29,8 +30,8 @@ def evaluate(encoder, decoder, input_batches, input_lengths, target_batches, tar
     real_words = []
 
     for t in range(max_target_length):
-        decoder_output, decoder_hidden = decoder(
-            decoder_input, decoder_hidden
+        decoder_output, decoder_hidden, decoder_cell = decoder(
+            decoder_input, decoder_hidden, decoder_cell
         )
 
         all_decoder_outputs[t] = decoder_output
