@@ -26,7 +26,7 @@ class DecoderRNN(nn.Module):
         output = self.embedding_dropout(output)
         output = output.view(1, batch_size, self.hidden_size)
         output = F.relu(output)
-        output, (hidden, cell) = self.gru(output, hidden, cell)
+        output, (hidden, cell) = self.gru(output, (hidden, cell))
         output = self.out(output[0])
         return output.squeeze(0), hidden, cell
 
