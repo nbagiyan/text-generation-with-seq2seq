@@ -30,7 +30,7 @@ class EncoderRNN(nn.Module):
 
 class NMTEncoderRNN(nn.Module):
     def __init__(self, input_size, hidden_size, n_layers=1, dropout=0.1, embedding_weights=None):
-        super(EncoderRNN, self).__init__()
+        super(NMTEncoderRNN, self).__init__()
 
         self.input_size = input_size
         self.hidden_size = hidden_size

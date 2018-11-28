@@ -37,7 +37,7 @@ class DecoderRNN(nn.Module):
 
 class NMTDecoderRNN(nn.Module):
     def __init__(self, hidden_size, output_size, dropout, n_layers = 1, dropout_p = 0.1, embedding_weights = None):
-        super(DecoderRNN, self).__init__()
+        super(NMTDecoderRNN, self).__init__()
         self.hidden_size = hidden_size
         self.output_size = output_size
         self.n_layers = n_layers
