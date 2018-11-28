@@ -87,12 +87,12 @@ if __name__ == '__main__':
 
 
     if USE_PRETRAINED:
-        encoder = NMTEncoderRNN(lang1.n_words, hidden_size, n_layers, dropout, embedding_weights = lang1.embedding_matrix)
-        decoder = NMTDecoderRNN(hidden_size, lang1.n_words, dropout, n_layers, embedding_weights = lang1.embedding_matrix)
+        encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout, embedding_weights = lang1.embedding_matrix)
+        decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, n_layers, embedding_weights = lang1.embedding_matrix)
         logger.info('Using pretrained embeddings')
     else:
-        encoder = NMTEncoderRNN(lang1.n_words, hidden_size, n_layers, dropout)
-        decoder = NMTDecoderRNN(hidden_size, lang1.n_words, dropout, n_layers)
+        encoder = EncoderRNN(lang1.n_words, hidden_size, n_layers, dropout)
+        decoder = DecoderRNN(hidden_size, lang1.n_words, dropout, n_layers)
 
     # Initialize optimizers and criterion
     encoder_optimizer = optim.Adam(encoder.parameters(), lr=learning_rate)
