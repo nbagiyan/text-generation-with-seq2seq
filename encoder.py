@@ -56,7 +56,7 @@ class NMTEncoderRNN(nn.Module):
         outputs = outputs[:, :, :self.hidden_size] + outputs[:, :, self.hidden_size:]
         outputs += outputs
         packed = torch.nn.utils.rnn.pack_padded_sequence(outputs, output_lengths)
-        outputs, (hidden, cell) = self.lstm2(packed, (hidden, cell))
+        outputs, (hidden, cell) = self.lstm2(packed)
         outputs, output_lengths = torch.nn.utils.rnn.pad_packed_sequence(outputs)  # unpack (back to padded)
         outputs = outputs[:, :, :self.hidden_size] + outputs[:, :, self.hidden_size:]  # Sum bidirectional outputs
         return outputs, hidden, cell
