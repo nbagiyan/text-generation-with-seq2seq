@@ -61,7 +61,7 @@ class NMTDecoderRNN(nn.Module):
         output = F.relu(output)
         output_residual, (hidden, cell) = self.lstm1(output, (hidden, cell))
         output_residual = output + output_residual
-        output_residual, (hidden, cell) = self.lstm3(output_residual, (hidden, cell))
+        output_residual, (hidden, cell) = self.lstm2(output_residual, (hidden, cell))
         output_residual = self.out(output[0])
         return output_residual.squeeze(0), hidden, cell
 
