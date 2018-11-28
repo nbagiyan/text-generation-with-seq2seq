@@ -50,7 +50,6 @@ if __name__ == '__main__':
 
     # Configure training/optimization
     clip = 50.0
-    teacher_forcing_ratio = 0.5
     learning_rate = 0.001
     decoder_learning_ratio = 5.0
     n_epochs = 100
