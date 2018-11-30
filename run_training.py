@@ -11,7 +11,7 @@ from src.normalize_text import normalize_string
 from src.lang import Lang
 from src.encoder import EncoderRNN
 from src.decoder import DecoderRNN
-from src.dataset import СustomDataset
+from src.dataset import CustomDataset
 from src.train import train
 from src.logger import logger
 
@@ -80,8 +80,8 @@ if __name__ == '__main__':
 
     lang1.addSentences(df_sample['text'].values.tolist(), USE_PRETRAINED)
 
-    dataset_train = СustomDataset(df_train, lang1, EOS_token,PAD_token, MAX_LENGTH)
-    dataset_val = СustomDataset(df_val, lang1, EOS_token,PAD_token, MAX_LENGTH)
+    dataset_train = CustomDataset(df_train, lang1, EOS_token,PAD_token, MAX_LENGTH)
+    dataset_val = CustomDataset(df_val, lang1, EOS_token,PAD_token, MAX_LENGTH)
     logger.info('Creating both train and val dataloader')
     dataloader_train = DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True)
     dataloader_val = DataLoader(dataset_val, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True)

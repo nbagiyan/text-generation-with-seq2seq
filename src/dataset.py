@@ -3,9 +3,9 @@ from torch.utils.data import Dataset
 
 
 
-class СustomDataset(Dataset):
+class CustomDataset(Dataset):
     def __init__(self, df, lang, EOS_token, PAD_token, MAX_LENGTH):
-        super(СustomDataset, self).__init__()
+        super(CustomDataset, self).__init__()
         self.df = df
         self.lang = lang
         self.EOS_token = EOS_token
