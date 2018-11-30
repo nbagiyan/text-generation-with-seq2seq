@@ -81,8 +81,8 @@ if __name__ == '__main__':
 
     lang1.addSentences(df_sample['text'].values.tolist(), USE_PRETRAINED)
 
-    dataset_train = CustomDataset(df_train, lang1, EOS_token,PAD_token, MAX_LENGTH)
-    dataset_val = CustomDataset(df_val, lang1, EOS_token,PAD_token, MAX_LENGTH)
+    dataset_train = CustomDataset(df_train.reset_index(drop = True), lang1, EOS_token,PAD_token, MAX_LENGTH)
+    dataset_val = CustomDataset(df_val.reset_index(drop = True), lang1, EOS_token,PAD_token, MAX_LENGTH)
     logger.info('Creating both train and val dataloader')
     dataloader_train = DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True)
     dataloader_val = DataLoader(dataset_val, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True)
