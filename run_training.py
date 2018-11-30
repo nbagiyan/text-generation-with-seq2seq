@@ -66,6 +66,7 @@ if __name__ == '__main__':
     lang1 = Lang(args['save_path_w2i'], args['save_path_i2w'])
     df_sample = df_all.sample(frac = float(args['sample_ratio']), random_state=123)
     df_sample['text'] = df_sample['text'].apply(normalize_string)
+    df_sample['target'] = 1
 
     val_shape = int(df_sample.shape[0]*1.0 * val_ratio)
 
