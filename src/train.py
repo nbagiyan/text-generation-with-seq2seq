@@ -1,4 +1,4 @@
-from masked_cross_entropy import *
+from src.masked_cross_entropy import *
 from torch.distributions.normal import Normal
 import random
 

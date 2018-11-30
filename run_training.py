@@ -1,22 +1,23 @@
 import argparse
 import pandas as pd
 import time
-from evaluate import evaluate
-from loader_state import create_correct_state_dict
-from torch.utils.data import DataLoader
-from normalize_text import normalize_string
-from lang import *
-from dataset import *
-from encoder import *
-from decoder import *
 from torch import optim
-from train import *
+from torch.utils.data import DataLoader
+from src.evaluate import evaluate
+from src.loader_state import create_correct_state_dict
+from src.normalize_text import normalize_string
+from src.lang import Lang
+from src.encoder import EncoderRNN
+from src.decoder import DecoderRNN
+from src.dataset import СustomDataset
+from src.train import train
+from src.logger import logger
 
 USE_CUDA = 1
 PAD_token = 0
 SOS_token = 1
 EOS_token = 2
-MAX_LENGTH = 15
+MAX_LENGTH = 115
 
 
 if __name__ == '__main__':
@@ -39,7 +40,7 @@ if __name__ == '__main__':
     parser.add_argument('--teacher_forcing_ratio')
     args = vars(parser.parse_args())
 
-    hidden_size = 300
+    hidden_size = 700
     n_layers = int(args['n_layers'])
     dropout = 0.1
     batch_size = int(args['batch_size'])
@@ -56,12 +57,12 @@ if __name__ == '__main__':
     evaluate_every = 15000
 
     logger.info('Reading data')
-    df_all = pd.read_csv(args['input_data'])
+    df_all = pd.read_json(args['input_data'], lines = True)
     df_all.dropna(inplace = True)
 
     lang1 = Lang(args['save_path_w2i'], args['save_path_i2w'])
     df_sample = df_all.sample(frac = float(args['sample_ratio']), random_state=123)
-    df_sample['headline'] = df_sample['headline'].apply(normalize_string)
+    df_sample['text'] = df_sample['text'].apply(normalize_string)
 
     val_shape = int(df_sample.shape[0]*1.0 * val_ratio)
 
@@ -75,10 +76,10 @@ if __name__ == '__main__':
     df_train.to_csv(args['save_path_train'], index=False)
     df_val.to_csv(args['save_path_val'], index=False)
 
-    lang1.addSentences(df_sample['headline'].values.tolist(), USE_PRETRAINED)
+    lang1.addSentences(df_sample['text'].values.tolist(), USE_PRETRAINED)
 
-    dataset_train = ClickBaitDataset(df_train, lang1, EOS_token,PAD_token, MAX_LENGTH)
-    dataset_val = ClickBaitDataset(df_val, lang1, EOS_token,PAD_token, MAX_LENGTH)
+    dataset_train = СustomDataset(df_train, lang1, EOS_token,PAD_token, MAX_LENGTH)
+    dataset_val = СustomDataset(df_val, lang1, EOS_token,PAD_token, MAX_LENGTH)
     logger.info('Creating both train and val dataloader')
     dataloader_train = DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True)
     dataloader_val = DataLoader(dataset_val, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True)

@@ -1,13 +1,11 @@
 import torch
-import unicodedata
-import re
 from torch.utils.data import Dataset
 
 
 
-class ClickBaitDataset(Dataset):
+class СustomDataset(Dataset):
     def __init__(self, df, lang, EOS_token, PAD_token, MAX_LENGTH):
-        super(ClickBaitDataset, self).__init__()
+        super(СustomDataset, self).__init__()
         self.df = df
         self.lang = lang
         self.EOS_token = EOS_token

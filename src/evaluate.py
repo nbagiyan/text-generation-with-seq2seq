@@ -1,5 +1,4 @@
-from masked_cross_entropy import *
-from logger import logger
+from src.masked_cross_entropy import *
 import torch
 
 PAD_token = 0

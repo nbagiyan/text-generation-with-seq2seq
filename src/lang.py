@@ -2,7 +2,7 @@ import tqdm
 import torch
 import torchtext
 import json
-from logger import logger
+from src.logger import logger
 
 class Lang(object):
     def __init__(self, save_path_w2i, save_path_i2w):
