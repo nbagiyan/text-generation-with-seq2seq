@@ -3,6 +3,7 @@
 import argparse
 import pandas as pd
 import time
+import torch
 from torch import optim
 from torch.utils.data import DataLoader
 from src.evaluate import evaluate
