@@ -59,7 +59,7 @@ if __name__ == '__main__':
     evaluate_every = 15000
 
     logger.info('Reading data')
-    df_all = pd.read_сsv(args['input_data'])
+    df_all = pd.read_csv(args['input_data'])
     df_all.dropna(inplace = True)
 
     lang1 = Lang(args['save_path_w2i'], args['save_path_i2w'])
